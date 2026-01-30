@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: jdbc-template-demo
+  datasource:
+    url: jdbc:mysql://localhost:3306/test_db
+    username: root
+    password: password
+
+logging:
+  level:
+    'org.springframework.jdbc': DEBUG
