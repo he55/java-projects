@@ -9,4 +9,6 @@ spring:
             - id: route1
               uri: https://juejin.cn
               predicates:
-                - Path=/**
+                - Path=/my/**
+              filters:
+                - StripPrefix=1
