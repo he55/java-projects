@@ -1,3 +1,12 @@
 spring:
   application:
     name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: route1
+              uri: https://juejin.cn
+              predicates:
+                - Path=/**
