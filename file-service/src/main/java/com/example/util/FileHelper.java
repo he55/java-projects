@@ -15,9 +15,8 @@ public class FileHelper {
     private FileHelper() {
     }
 
-    public static List<DirectoryDto> getDirs(String dir) {
-        Path path = Path.of(dir);
-        return getDirs(path, path);
+    public static List<DirectoryDto> getDirs(Path dir) {
+        return getDirs(dir, dir);
     }
 
     private static List<DirectoryDto> getDirs(Path dir, Path baseDir) {
