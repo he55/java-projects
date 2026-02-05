@@ -75,6 +75,10 @@ public class FileServiceImpl implements FileService {
         Path file = rootLocation.resolve(filename);
         try {
             UrlResource urlResource = new UrlResource(file.toUri());
+            if (!urlResource.exists()) {
+                log.error("Not found file {}", filename);
+                throw new RuntimeException("Not found file " + filename);
+            }
             return urlResource;
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
