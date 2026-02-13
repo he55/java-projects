@@ -1,9 +1,9 @@
 package com.example.service;
 
-import com.example.StorageProperties;
+import com.example.properties.StorageProperties;
 import com.example.dto.DirectoryDto;
 import com.example.dto.FileDto;
-import com.example.util.FileHelper;
+import com.example.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -36,7 +36,7 @@ public class FileServiceImpl implements FileService {
             throw new RuntimeException("Directory not found " + dir);
         }
 
-        return FileHelper.getDirs(dir);
+        return FileUtil.getDirs(dir);
     }
 
     @Override

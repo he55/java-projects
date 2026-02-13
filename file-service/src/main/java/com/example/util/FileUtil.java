@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class FileHelper {
+public class FileUtil {
 
-    private FileHelper() {
+    private FileUtil() {
     }
 
     public static List<DirectoryDto> getDirs(Path dir) {

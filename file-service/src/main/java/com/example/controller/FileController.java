@@ -32,7 +32,7 @@ public class FileController {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam String filename) {
+    public ResponseEntity<?> downloadFile(@RequestParam String filename) {
         Resource resource = fileService.loadAsResource(filename);
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)

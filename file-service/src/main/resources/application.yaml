@@ -1,6 +1,13 @@
 spring:
   application:
     name: file-service
-
+jwt-security:
+  secret: dskkldldlld
+  ttl: 3600
+  ignore-urls:
+    - /auth/login
+    - /v3/api-docs
+    - /scalar/**
+    - /files/download
 storage:
   location: /Users/hwz/Desktop/files
