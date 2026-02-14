@@ -1,24 +1,25 @@
-package com.example.component;
+package com.example.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.dto.UserDto;
-import com.example.properties.JwtSecurityProperties;
-import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 
-@Component
 public class JwtUtil {
 
     private final Integer ttl;
     private final Algorithm algorithm;
 
-    public JwtUtil(JwtSecurityProperties jwtSecurityProperties) {
-        this.ttl = jwtSecurityProperties.getTtl();
-        this.algorithm = Algorithm.HMAC256(jwtSecurityProperties.getSecret());
+    public JwtUtil() {
+        this("secret", 600);
+    }
+
+    public JwtUtil(String secretKey, int ttl) {
+        this.ttl = ttl;
+        this.algorithm = Algorithm.HMAC256(secretKey);
     }
 
     public String generateToken(UserDto user) {
@@ -30,8 +31,7 @@ public class JwtUtil {
     }
 
     public UserDto validateToken(String token) {
-        JWTVerifier verifier = JWT.require(algorithm)
-                .build();
+        JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT verify = verifier.verify(token);
 
         UserDto user = new UserDto();

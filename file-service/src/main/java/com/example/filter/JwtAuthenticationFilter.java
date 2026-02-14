@@ -1,7 +1,7 @@
 package com.example.filter;
 
 import com.example.dto.UserDto;
-import com.example.component.JwtUtil;
+import com.example.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
