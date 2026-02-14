@@ -1,6 +1,10 @@
 spring:
   application:
     name: file-service
+  datasource:
+    url: jdbc:mysql://localhost/test_db
+    username: root
+    password: password
 jwt-security:
   secret: 17ca00372d384c9c8dc085303d35fd2c
   ttl: 3600
