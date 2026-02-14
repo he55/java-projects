@@ -38,7 +38,7 @@ public class AuthController {
             throw new RuntimeException("password required");
         }
 
-        String userName = userService.findByIdAndPassword(loginDto.getUserId(), loginDto.getPassword());
+        String userName = userService.findByIdAndPassword(loginDto.getUserId(), loginDto.getPassword(), loginDto.getOrg());
         if (userName == null) {
             throw new RuntimeException("username or password error");
         }

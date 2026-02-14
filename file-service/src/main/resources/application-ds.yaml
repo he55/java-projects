@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    dynamic:
+      lazy: true
+      strict: true
+      datasource:
+        test:
+          url: jdbc:mysql://localhost/test_db
+          username: root
+          password: password
+        newdb:
+          url: jdbc:mysql://localhost/newdb
+          username: root
+          password: password
