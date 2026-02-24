@@ -5,8 +5,8 @@ import com.example.dto.LoginDto;
 import com.example.service.CurrentUser;
 import com.example.service.UserService;
 import com.example.util.JwtUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,15 +29,7 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/login")
-    public Object login(@RequestBody LoginDto loginDto) {
-        if (!StringUtils.hasText(loginDto.getOrg())) {
-            throw new RuntimeException("org required");
-        }
-
-        if (!StringUtils.hasText(loginDto.getPassword())) {
-            throw new RuntimeException("password required");
-        }
-
+    public Object login(@Valid @RequestBody LoginDto loginDto) {
         String userName = userService.findByIdAndPassword(loginDto.getUserId(), loginDto.getPassword(), loginDto.getOrg());
         if (userName == null) {
             throw new RuntimeException("username or password error");
