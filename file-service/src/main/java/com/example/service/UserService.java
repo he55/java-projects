@@ -1,5 +1,7 @@
 package com.example.service;
 
+import com.example.pojo.User;
+
 public interface UserService {
-    String findByIdAndPassword(int id, String password, String org);
+    User findByIdAndPassword(int id, String password, String org);
 }

@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.dto.UserDto;
 import com.example.dto.LoginDto;
+import com.example.pojo.User;
 import com.example.service.CurrentUser;
 import com.example.service.UserService;
 import com.example.util.JwtUtil;
@@ -30,16 +31,16 @@ public class AuthController {
 
     @PostMapping("/login")
     public Object login(@Valid @RequestBody LoginDto loginDto) {
-        String userName = userService.findByIdAndPassword(loginDto.getUserId(), loginDto.getPassword(), loginDto.getOrg());
-        if (userName == null) {
-            throw new RuntimeException("username or password error");
+        User user = userService.findByIdAndPassword(loginDto.getUserId(), loginDto.getPassword(), loginDto.getOrg());
+        if (user == null) {
+            throw new RuntimeException("用户名或者密码错误");
         }
 
         String token = jwtUtil.generateToken(new UserDto(loginDto.getOrg(), String.valueOf(loginDto.getUserId())));
 
         Map<String, Object> map = new HashMap<>();
         map.put("userId", loginDto.getUserId());
-        map.put("userName", userName);
+        map.put("userName", user.getUserName());
         map.put("token", token);
         return map;
     }

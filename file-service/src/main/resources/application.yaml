@@ -13,3 +13,7 @@ jwt-security:
     - /files/download
 storage:
   location: /Users/hwz/Desktop/files
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true

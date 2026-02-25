@@ -1,21 +1,20 @@
 package com.example.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.example.mapper.UserMapper;
+import com.example.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private UserMapper userMapper;
 
     @DS("#org")
     @Override
-    public String findByIdAndPassword(int id, String password, String org) {
-        String userName = jdbcTemplate.queryForObject("SELECT user_name FROM t_user where id=? and `password`=? limit 1",
-                String.class, id, password);
-        return userName;
+    public User findByIdAndPassword(int id, String password, String org) {
+        return userMapper.getUserByIdAndPassword(id, password);
     }
 }
