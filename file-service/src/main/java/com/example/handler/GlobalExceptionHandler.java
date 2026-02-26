@@ -11,8 +11,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        StringBuilder sb = new StringBuilder("参数验证失败:");
-        e.getBindingResult().getAllErrors().forEach((error) -> {
+        StringBuilder sb = new StringBuilder("参数错误:");
+        e.getBindingResult().getFieldErrors().forEach((error) -> {
             sb.append("\n").append(error.getDefaultMessage());
         });
         return new ResponseEntity<>(sb.toString(), HttpStatus.BAD_REQUEST);
