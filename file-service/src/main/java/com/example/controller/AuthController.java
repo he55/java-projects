@@ -1,7 +1,8 @@
 package com.example.controller;
 
 import com.example.dto.UserDto;
-import com.example.dto.LoginDto;
+import com.example.dto.req.LoginDto;
+import com.example.dto.resp.UserTokenDto;
 import com.example.exception.BusinessException;
 import com.example.pojo.User;
 import com.example.service.CurrentUser;
@@ -31,7 +32,7 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/login")
-    public Object login(@Valid @RequestBody LoginDto loginDto) {
+    public UserTokenDto login(@Valid @RequestBody LoginDto loginDto) {
         User user = userService.findByIdAndPassword(loginDto.getUserId(), loginDto.getPassword(), loginDto.getOrg());
         if (user == null) {
             throw new BusinessException("用户名或者密码错误");
@@ -39,11 +40,11 @@ public class AuthController {
 
         String token = jwtUtil.generateToken(new UserDto(loginDto.getOrg(), String.valueOf(loginDto.getUserId())));
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("userId", loginDto.getUserId());
-        map.put("userName", user.getUserName());
-        map.put("token", token);
-        return map;
+        UserTokenDto userTokenDto = new UserTokenDto();
+        userTokenDto.setUserId(user.getUserId());
+        userTokenDto.setUserName(user.getUserName());
+        userTokenDto.setToken(token);
+        return userTokenDto;
     }
 
     @PostMapping("/logout")
