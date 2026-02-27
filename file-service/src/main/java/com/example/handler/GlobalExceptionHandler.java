@@ -1,5 +1,6 @@
 package com.example.handler;
 
+import com.example.exception.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,6 +17,11 @@ public class GlobalExceptionHandler {
             sb.append("\n").append(error.getDefaultMessage());
         });
         return new ResponseEntity<>(sb.toString(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<?> handleBusinessException(BusinessException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

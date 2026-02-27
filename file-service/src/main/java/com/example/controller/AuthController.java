@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.dto.UserDto;
 import com.example.dto.LoginDto;
+import com.example.exception.BusinessException;
 import com.example.pojo.User;
 import com.example.service.CurrentUser;
 import com.example.service.UserService;
@@ -33,7 +34,7 @@ public class AuthController {
     public Object login(@Valid @RequestBody LoginDto loginDto) {
         User user = userService.findByIdAndPassword(loginDto.getUserId(), loginDto.getPassword(), loginDto.getOrg());
         if (user == null) {
-            throw new RuntimeException("用户名或者密码错误");
+            throw new BusinessException("用户名或者密码错误");
         }
 
         String token = jwtUtil.generateToken(new UserDto(loginDto.getOrg(), String.valueOf(loginDto.getUserId())));
