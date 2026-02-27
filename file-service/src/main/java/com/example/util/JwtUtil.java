@@ -13,10 +13,6 @@ public class JwtUtil {
     private final Integer ttl;
     private final Algorithm algorithm;
 
-    public JwtUtil() {
-        this("secret", 600);
-    }
-
     public JwtUtil(String secretKey, int ttl) {
         this.ttl = ttl;
         this.algorithm = Algorithm.HMAC256(secretKey);
