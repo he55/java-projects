@@ -1,7 +1,7 @@
 package com.example.config;
 
-import com.example.component.JwtAccessDeniedHandler;
-import com.example.component.JwtAuthenticationEntryPoint;
+import com.example.handler.JwtAccessDeniedHandler;
+import com.example.handler.JwtAuthenticationEntryPoint;
 import com.example.filter.JwtAuthenticationFilter;
 import com.example.properties.JwtSecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +24,6 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-    @Autowired
-    private JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -42,8 +36,8 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exceptionHandler ->
                         exceptionHandler
-                                .accessDeniedHandler(jwtAccessDeniedHandler)
-                                .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                                .accessDeniedHandler(new JwtAccessDeniedHandler())
+                                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
