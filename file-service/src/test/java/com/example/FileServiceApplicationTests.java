@@ -17,13 +17,13 @@ class FileServiceApplicationTests {
 
     @Test
     void getDirectories() {
-        List<DirectoryDto> directories = fileService.getDirectories(645);
+        List<DirectoryDto> directories = fileService.getDirectories(645, "TEST");
         System.out.println("directories = " + directories);
     }
 
     @Test
     void getFiles() {
-        List<FileDto> files = fileService.getFiles("645/照片");
+        List<FileDto> files = fileService.getFiles("files/645/照片", "TEST");
         System.out.println("files = " + files);
     }
 

@@ -10,10 +10,10 @@ import java.time.Instant;
 
 public class JwtUtil {
 
-    private final Integer ttl;
+    private final long ttl;
     private final Algorithm algorithm;
 
-    public JwtUtil(String secretKey, int ttl) {
+    public JwtUtil(String secretKey, long ttl) {
         this.ttl = ttl;
         this.algorithm = Algorithm.HMAC256(secretKey);
     }

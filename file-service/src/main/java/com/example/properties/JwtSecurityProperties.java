@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("jwt-security")
 public class JwtSecurityProperties {
     private String secret;
-    private Integer ttl;
+    private Long ttl;
     private String[] ignoreUrls = new String[0];
 }

@@ -12,7 +12,8 @@ jwt-security:
     - /auth/login
     - /files/download
 storage:
-  location: /Users/hwz/Desktop/files
+  locations:
+    TEST: /Users/hwz/Desktop/TEST
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   configuration:

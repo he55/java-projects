@@ -1,87 +1,88 @@
 package com.example.service;
 
+import com.example.exception.BusinessException;
 import com.example.properties.StorageProperties;
 import com.example.dto.DirectoryDto;
 import com.example.dto.FileDto;
 import com.example.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Slf4j
 @Service
 public class FileServiceImpl implements FileService {
 
-    private final Path rootLocation;
+    private final StorageProperties storageProperties;
 
     public FileServiceImpl(StorageProperties storageProperties) {
-        rootLocation = Paths.get(storageProperties.getLocation());
+        this.storageProperties = storageProperties;
     }
 
-    @Override
-    public List<DirectoryDto> getDirectories(Integer id) {
-        Path dir = rootLocation.resolve("" + id);
-        if (!Files.exists(dir)) {
-            log.error("Directory not found {}", dir);
-            throw new RuntimeException("Directory not found " + dir);
+    private @NonNull Path getBasePath(String org) {
+        String baseDir = storageProperties.getLocations().get(org);
+        if (baseDir == null) {
+            throw new BusinessException("机构编号无效 " + org);
         }
-
-        return FileUtil.getDirs(dir);
+        return Path.of(baseDir);
     }
 
     @Override
-    public List<FileDto> getFiles(String dir) {
-        Path path = rootLocation.resolve(dir);
+    public List<DirectoryDto> getDirectories(Integer id, String org) {
+        Path basePath = getBasePath(org);
+        Path path = basePath.resolve("files/" + id);
         if (!Files.exists(path)) {
-            log.error("Not found folder {}", path);
-            throw new RuntimeException("Not found folder " + path);
+            log.warn("没有找到目录 {}", path);
+            return List.of();
         }
 
         try {
-            List<FileDto> list = Files.list(path).filter(p -> {
-                try {
-                    return !Files.isDirectory(p) && !Files.isHidden(p);
-                } catch (IOException e) {
-                    log.error("读取文件异常", e);
-                    return false;
-                }
-            }).map(p -> {
-                String s = rootLocation.relativize(p).toString();
-                String s1 = URLEncoder.encode(s, StandardCharsets.UTF_8);
-
-                FileDto fileDto = new FileDto();
-                fileDto.setFileName(p.getFileName().toString());
-                fileDto.setUrl("http://localhost:8080/files/download?filename=" + s1);
-                return fileDto;
-            }).toList();
-            return list;
+            return FileUtil.getDirs(path, basePath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new BusinessException("读取目录失败");
         }
     }
 
     @Override
-    public Resource loadAsResource(String filename) {
-        Path file = rootLocation.resolve(filename);
+    public List<FileDto> getFiles(String dir, String org) {
+        Path basePath = getBasePath(org);
+        Path path = basePath.resolve(dir);
+        if (!Files.exists(path)) {
+            throw new BusinessException("目录不存在 " + path);
+        }
+
         try {
-            UrlResource urlResource = new UrlResource(file.toUri());
-            if (!urlResource.exists()) {
-                log.error("Not found file {}", filename);
-                throw new RuntimeException("Not found file " + filename);
-            }
-            return urlResource;
+            List<FileDto> files = FileUtil.getFiles(path, basePath);
+            return files.stream().peek(fileDto -> {
+                fileDto.setUrl("http://localhost:8080/files/download?filename=%s&org=%s"
+                        .formatted(fileDto.getUrl(), org));
+            }).toList();
+        } catch (IOException e) {
+            throw new BusinessException("读取文件失败");
+        }
+    }
+
+    @Override
+    public Resource loadAsResource(String filename, String org) {
+        Path basePath = getBasePath(org);
+        Path file = basePath.resolve(filename);
+        if (!Files.exists(file)) {
+            throw new BusinessException("文件不存在");
+        }
+
+        try {
+            return new UrlResource(file.toUri());
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage(), e);
+            throw new BusinessException("文件读取失败");
         }
     }
 }

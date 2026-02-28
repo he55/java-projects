@@ -7,7 +7,10 @@ import org.springframework.core.io.Resource;
 import java.util.List;
 
 public interface FileService {
-    List<DirectoryDto> getDirectories(Integer id);
-    List<FileDto> getFiles(String dir);
-    Resource loadAsResource(String filename);
+
+    List<DirectoryDto> getDirectories(Integer id, String org);
+
+    List<FileDto> getFiles(String dir, String org);
+
+    Resource loadAsResource(String filename, String org);
 }
