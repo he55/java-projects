@@ -10,6 +10,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -36,7 +37,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<DirectoryDto> getDirectories(Integer id, String org) {
+    public List<DirectoryDto> getFolders(Integer id, String org) {
         Path basePath = getBasePath(org);
         Path path = basePath.resolve("files/" + id);
         if (!Files.exists(path)) {
@@ -45,7 +46,7 @@ public class FileServiceImpl implements FileService {
         }
 
         try {
-            return FileUtil.getDirs(path, basePath);
+            return FileUtil.getFolders(path, basePath);
         } catch (IOException e) {
             throw new BusinessException("读取目录失败");
         }
@@ -53,6 +54,10 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public List<FileDto> getFiles(String dir, String org) {
+        if (!StringUtils.hasText(dir)) {
+            throw new BusinessException("目录不能为空");
+        }
+
         Path basePath = getBasePath(org);
         Path path = basePath.resolve(dir);
         if (!Files.exists(path)) {

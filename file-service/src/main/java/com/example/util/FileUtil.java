@@ -18,7 +18,7 @@ public class FileUtil {
     private FileUtil() {
     }
 
-    public static List<DirectoryDto> getDirs(Path path, Path basePath) throws IOException {
+    public static List<DirectoryDto> getFolders(Path path, Path basePath) throws IOException {
         try (Stream<Path> stream = Files.list(path)) {
             return stream.filter(Files::isDirectory)
                     .map(p -> {
@@ -27,7 +27,7 @@ public class FileUtil {
                         directoryDto.setPath(basePath.relativize(p).toString());
 
                         try {
-                            List<DirectoryDto> dirs = getDirs(p, basePath);
+                            List<DirectoryDto> dirs = getFolders(p, basePath);
                             if (!dirs.isEmpty()) {
                                 directoryDto.setChildren(dirs);
                             }

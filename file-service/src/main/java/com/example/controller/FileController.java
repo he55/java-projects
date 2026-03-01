@@ -29,14 +29,14 @@ public class FileController {
         }
     }
 
-    @GetMapping("/getDirectories")
-    public List<DirectoryDto> getDirectories(@RequestParam Integer id, @RequestParam String org) {
+    @GetMapping("/get-folders")
+    public List<DirectoryDto> getFolders(@RequestParam Integer id, @RequestParam String org) {
         validOrg(org);
 
-        return fileService.getDirectories(id, org);
+        return fileService.getFolders(id, org);
     }
 
-    @GetMapping("/getFiles")
+    @GetMapping("/get-files")
     public List<FileDto> getFiles(@RequestParam String dir, @RequestParam String org) {
         validOrg(org);
 

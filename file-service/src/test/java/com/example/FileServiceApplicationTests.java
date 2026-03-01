@@ -15,13 +15,13 @@ class FileServiceApplicationTests {
     @Autowired
     private FileService fileService;
 
-    @Test
-    void getDirectories() {
-        List<DirectoryDto> directories = fileService.getDirectories(645, "TEST");
-        System.out.println("directories = " + directories);
+//    @Test
+    void getFolders() {
+        List<DirectoryDto> folders = fileService.getFolders(645, "TEST");
+        System.out.println("folders = " + folders);
     }
 
-    @Test
+//    @Test
     void getFiles() {
         List<FileDto> files = fileService.getFiles("files/645/照片", "TEST");
         System.out.println("files = " + files);

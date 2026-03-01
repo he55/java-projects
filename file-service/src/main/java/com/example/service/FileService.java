@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface FileService {
 
-    List<DirectoryDto> getDirectories(Integer id, String org);
+    List<DirectoryDto> getFolders(Integer id, String org);
 
     List<FileDto> getFiles(String dir, String org);
 
