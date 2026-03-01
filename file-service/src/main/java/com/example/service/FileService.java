@@ -12,5 +12,5 @@ public interface FileService {
 
     List<FileDto> getFiles(String dir, String org);
 
-    Resource loadAsResource(String filename, String org);
+    Resource getFileAsResource(String filename, String org);
 }

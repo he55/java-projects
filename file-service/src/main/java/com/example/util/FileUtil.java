@@ -3,6 +3,8 @@ package com.example.util;
 import com.example.dto.DirectoryDto;
 import com.example.dto.FileDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,5 +62,9 @@ public class FileUtil {
                         return fileDto;
                     }).toList();
         }
+    }
+
+    public static Resource getFileAsResource(Path path) {
+        return new FileSystemResource(path);
     }
 }

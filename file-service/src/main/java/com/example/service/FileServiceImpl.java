@@ -8,12 +8,10 @@ import com.example.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -29,6 +27,10 @@ public class FileServiceImpl implements FileService {
     }
 
     private @NonNull Path getBasePath(String org) {
+        if (!StringUtils.hasText(org)) {
+            throw new BusinessException("机构编号不能为空");
+        }
+
         String baseDir = storageProperties.getLocations().get(org);
         if (baseDir == null) {
             throw new BusinessException("机构编号无效 " + org);
@@ -76,18 +78,13 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Resource loadAsResource(String filename, String org) {
+    public Resource getFileAsResource(String filename, String org) {
         Path basePath = getBasePath(org);
         Path file = basePath.resolve(filename);
         if (!Files.exists(file)) {
-            throw new BusinessException("文件不存在");
+            return null;
         }
 
-        try {
-            return new UrlResource(file.toUri());
-        } catch (MalformedURLException e) {
-            log.error(e.getMessage(), e);
-            throw new BusinessException("文件读取失败");
-        }
+        return FileUtil.getFileAsResource(file);
     }
 }
