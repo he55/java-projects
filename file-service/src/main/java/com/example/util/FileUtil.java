@@ -4,6 +4,7 @@ import com.example.dto.DirectoryDto;
 import com.example.dto.FileDto;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +21,10 @@ public class FileUtil {
 
     public static List<DirectoryDto> getFolders(Path path, Path basePath) throws IOException {
         try (Stream<Path> stream = Files.list(path)) {
-            return stream.filter(Files::isDirectory)
+            return stream.filter(p -> {
+                        File file = p.toFile();
+                        return file.isDirectory() && !file.isHidden();
+                    })
                     .map(p -> {
                         DirectoryDto directoryDto = new DirectoryDto();
                         directoryDto.setName(p.getFileName().toString());
@@ -42,7 +46,10 @@ public class FileUtil {
 
     public static List<FileDto> getFiles(Path path, Path basePath) throws IOException {
         try (Stream<Path> stream = Files.list(path)) {
-            return stream.filter(p -> !Files.isDirectory(p))
+            return stream.filter(p -> {
+                        File file = p.toFile();
+                        return file.isFile() && !file.isHidden();
+                    })
                     .map(p -> {
                         String s = basePath.relativize(p).toString();
                         String s1 = URLEncoder.encode(s, StandardCharsets.UTF_8);
