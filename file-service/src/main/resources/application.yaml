@@ -3,6 +3,18 @@ spring:
     name: file-service
   profiles:
     include: ds
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+server:
+  port: 8080
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
 jwt-security:
   secret: 17ca00372d384c9c8dc085303d35fd2c
   ttl: 3600
@@ -14,7 +26,3 @@ jwt-security:
 storage:
   locations:
     TEST: /Users/hwz/Desktop/TEST
-mybatis:
-  mapper-locations: classpath:mapper/**/*.xml
-  configuration:
-    map-underscore-to-camel-case: true
