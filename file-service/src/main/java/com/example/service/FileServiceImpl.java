@@ -10,7 +10,9 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -86,5 +88,29 @@ public class FileServiceImpl implements FileService {
         }
 
         return FileUtil.getFileAsResource(file);
+    }
+
+    public void uploadFile(MultipartFile file, String dir, String org) throws IOException {
+        if (!StringUtils.hasText(dir)) {
+            throw new BusinessException("目录不能为空");
+        }
+
+        Path basePath = getBasePath(org);
+        Path path = basePath.resolve(dir);
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
+        }
+
+        if (file.isEmpty()) {
+            throw new BusinessException("上传文件不能为空");
+        }
+
+        String filename = file.getOriginalFilename();
+        if (!StringUtils.hasText(filename)) {
+            throw new BusinessException("文件名称不能为空");
+        }
+
+        Path dest = path.resolve(filename);
+        file.transferTo(dest);
     }
 }
