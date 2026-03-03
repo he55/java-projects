@@ -1,15 +1,12 @@
 package com.example.util;
 
 import com.example.dto.DirectoryDto;
-import com.example.dto.FileDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -46,22 +43,11 @@ public class FileUtil {
         }
     }
 
-    public static List<FileDto> getFiles(Path path, Path basePath) throws IOException {
-        try (Stream<Path> stream = Files.list(path)) {
-            return stream.filter(p -> {
-                        File file = p.toFile();
-                        return file.isFile() && !file.isHidden();
-                    })
-                    .map(p -> {
-                        String s = basePath.relativize(p).toString();
-                        String s1 = URLEncoder.encode(s, StandardCharsets.UTF_8);
-
-                        FileDto fileDto = new FileDto();
-                        fileDto.setFileName(p.getFileName().toString());
-                        fileDto.setUrl(s1);
-                        return fileDto;
-                    }).toList();
-        }
+    public static Stream<Path> getFiles(Path path) throws IOException {
+        return Files.list(path).filter(p -> {
+            File file = p.toFile();
+            return file.isFile() && !file.isHidden();
+        });
     }
 
     public static Resource getFileAsResource(Path path) {

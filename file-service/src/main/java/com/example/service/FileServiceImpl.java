@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -69,11 +70,17 @@ public class FileServiceImpl implements FileService {
         }
 
         try {
-            List<FileDto> files = FileUtil.getFiles(path, basePath);
-            return files.stream().peek(fileDto -> {
-                fileDto.setUrl("http://localhost:8080/files/download?filename=%s&org=%s"
-                        .formatted(fileDto.getUrl(), org));
-            }).toList();
+            return FileUtil.getFiles(path)
+                    .map(p -> {
+                        String s = basePath.relativize(p).toString();
+                        String s1 = URLEncoder.encode(s, StandardCharsets.UTF_8);
+
+                        FileDto fileDto = new FileDto();
+                        fileDto.setFileName(p.getFileName().toString());
+                        fileDto.setUrl("http://localhost:8080/files/download?filename=%s&org=%s"
+                                .formatted(s1, org));
+                        return fileDto;
+                    }).toList();
         } catch (IOException e) {
             throw new BusinessException("读取文件失败");
         }
