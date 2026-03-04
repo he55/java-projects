@@ -1,5 +1,6 @@
 package com.example.filter;
 
+import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import com.example.dto.UserDto;
 import com.example.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -30,6 +31,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (userDto != null) {
                 var authenticationToken = new UsernamePasswordAuthenticationToken(userDto, null, null);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+                String ds = userDto.getOrg();
+                try {
+                    DynamicDataSourceContextHolder.push(ds);
+                    filterChain.doFilter(request, response);
+                } finally {
+                    DynamicDataSourceContextHolder.poll();
+                }
+                return;
             }
         }
 
