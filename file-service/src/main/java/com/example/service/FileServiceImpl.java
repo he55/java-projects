@@ -6,6 +6,8 @@ import com.example.dto.DirectoryDto;
 import com.example.dto.FileDto;
 import com.example.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.name.Rename;
 import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -119,5 +121,9 @@ public class FileServiceImpl implements FileService {
 
         Path dest = path.resolve(filename);
         file.transferTo(dest);
+
+        Thumbnails.of(dest.toFile())
+                .size(400, 400)
+                .toFiles(Rename.PREFIX_DOT_THUMBNAIL);
     }
 }

@@ -58,6 +58,11 @@
             <artifactId>dynamic-datasource-spring-boot4-starter</artifactId>
             <version>4.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.21</version>
+        </dependency>
 
         <dependency>
             <groupId>com.mysql</groupId>

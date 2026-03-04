@@ -46,7 +46,7 @@ public class FileUtil {
     public static Stream<Path> getFiles(Path path) throws IOException {
         return Files.list(path).filter(p -> {
             File file = p.toFile();
-            return file.isFile() && !file.isHidden();
+            return !file.getName().startsWith("thumbnail.") && file.isFile() && !file.isHidden();
         });
     }
 
