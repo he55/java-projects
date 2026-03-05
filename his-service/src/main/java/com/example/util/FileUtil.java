@@ -1,0 +1,56 @@
+package com.example.util;
+
+import com.example.dto.DirectoryDto;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Stream;
+
+@Slf4j
+public class FileUtil {
+
+    private FileUtil() {
+    }
+
+    public static List<DirectoryDto> getFolders(Path path, Path basePath) throws IOException {
+        try (Stream<Path> stream = Files.list(path)) {
+            return stream.filter(p -> {
+                        File file = p.toFile();
+                        return file.isDirectory() && !file.isHidden();
+                    })
+                    .map(p -> {
+                        DirectoryDto directoryDto = new DirectoryDto();
+                        directoryDto.setName(p.getFileName().toString());
+                        directoryDto.setPath(basePath.relativize(p).toString());
+
+                        try {
+                            List<DirectoryDto> dirs = getFolders(p, basePath);
+                            if (!dirs.isEmpty()) {
+                                directoryDto.setChildren(dirs);
+                            }
+                        } catch (IOException e) {
+                            log.error("读取目录失败 {}", p);
+                        }
+
+                        return directoryDto;
+                    }).toList();
+        }
+    }
+
+    public static Stream<Path> getFiles(Path path) throws IOException {
+        return Files.list(path).filter(p -> {
+            File file = p.toFile();
+            return !file.getName().startsWith("thumbnail.") && file.isFile() && !file.isHidden();
+        });
+    }
+
+    public static Resource getFileAsResource(Path path) {
+        return new FileSystemResource(path);
+    }
+}

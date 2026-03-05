@@ -1,0 +1,129 @@
+package com.example.service;
+
+import com.example.exception.BusinessException;
+import com.example.properties.StorageProperties;
+import com.example.dto.DirectoryDto;
+import com.example.dto.FileDto;
+import com.example.util.FileUtil;
+import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.name.Rename;
+import org.jspecify.annotations.NonNull;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
+@Slf4j
+@Service
+public class FileServiceImpl implements FileService {
+
+    private final StorageProperties storageProperties;
+
+    public FileServiceImpl(StorageProperties storageProperties) {
+        this.storageProperties = storageProperties;
+    }
+
+    private @NonNull Path getBasePath(String org) {
+        if (!StringUtils.hasText(org)) {
+            throw new BusinessException("机构编号不能为空");
+        }
+
+        String baseDir = storageProperties.getLocations().get(org);
+        if (baseDir == null) {
+            throw new BusinessException("机构编号无效 " + org);
+        }
+        return Path.of(baseDir);
+    }
+
+    @Override
+    public List<DirectoryDto> getFolders(Integer id, String org) {
+        Path basePath = getBasePath(org);
+        Path path = basePath.resolve("files/" + id);
+        if (!Files.exists(path)) {
+            log.warn("没有找到目录 {}", path);
+            return List.of();
+        }
+
+        try {
+            return FileUtil.getFolders(path, basePath);
+        } catch (IOException e) {
+            throw new BusinessException("读取目录失败");
+        }
+    }
+
+    @Override
+    public List<FileDto> getFiles(String dir, String org) {
+        if (!StringUtils.hasText(dir)) {
+            throw new BusinessException("目录不能为空");
+        }
+
+        Path basePath = getBasePath(org);
+        Path path = basePath.resolve(dir);
+        if (!Files.exists(path)) {
+            throw new BusinessException("目录不存在 " + path);
+        }
+
+        try {
+            return FileUtil.getFiles(path)
+                    .map(p -> {
+                        String s = basePath.relativize(p).toString();
+                        String s1 = URLEncoder.encode(s, StandardCharsets.UTF_8);
+
+                        FileDto fileDto = new FileDto();
+                        fileDto.setFileName(p.getFileName().toString());
+                        fileDto.setUrl("http://localhost:8080/files/download?filename=%s&org=%s"
+                                .formatted(s1, org));
+                        return fileDto;
+                    }).toList();
+        } catch (IOException e) {
+            throw new BusinessException("读取文件失败");
+        }
+    }
+
+    @Override
+    public Resource getFileAsResource(String filename, String org) {
+        Path basePath = getBasePath(org);
+        Path file = basePath.resolve(filename);
+        if (!Files.exists(file)) {
+            return null;
+        }
+
+        return FileUtil.getFileAsResource(file);
+    }
+
+    public void uploadFile(MultipartFile file, String dir, String org) throws IOException {
+        if (!StringUtils.hasText(dir)) {
+            throw new BusinessException("目录不能为空");
+        }
+
+        Path basePath = getBasePath(org);
+        Path path = basePath.resolve(dir);
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
+        }
+
+        if (file.isEmpty()) {
+            throw new BusinessException("上传文件不能为空");
+        }
+
+        String filename = file.getOriginalFilename();
+        if (!StringUtils.hasText(filename)) {
+            throw new BusinessException("文件名称不能为空");
+        }
+
+        Path dest = path.resolve(filename);
+        file.transferTo(dest);
+
+        Thumbnails.of(dest.toFile())
+                .size(400, 400)
+                .toFiles(Rename.PREFIX_DOT_THUMBNAIL);
+    }
+}
