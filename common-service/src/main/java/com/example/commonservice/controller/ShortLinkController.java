@@ -32,7 +32,7 @@ public class ShortLinkController {
         String key = UUID.randomUUID().toString().replace("-", "");
 
         stringRedisTemplate.opsForValue()
-                .set(SHORT_LINK_KEY.formatted(key), shortLinkCreateReqDTO.getUrl(), Duration.ofDays(1));
+                .set(SHORT_LINK_KEY.formatted(key), shortLinkCreateReqDTO.getUrl(), Duration.ofHours(5));
 
         ShortLinkCreateRespDTO shortLinkCreateRespDTO = new ShortLinkCreateRespDTO();
         shortLinkCreateRespDTO.setShortUrl("http://localhost:8080/u/" + key);
